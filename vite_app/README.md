@@ -13,13 +13,43 @@ Uses **time-compressed SM-2 spaced repetition** (built for cramming, not long-te
 
 - SM-2 spaced repetition with 3-button grading (Again / Good / Easy)
 - Mastery tracking per card (New → Learning → Young → Mature)
-- Cross-session progress saved in browser localStorage
+- Cross-session progress saved in browser `localStorage`
 - Daily streak counter
 - Stats panel with mastery breakdown
+- Keyboard shortcuts: `Space` reveal · `1` Again · `2` Good · `3` Easy · `S` Skip
+- Respects `prefers-reduced-motion`
+
+## Project structure
+
+```
+src/
+├── App.jsx                       # top-level state + composition
+├── cards.js                      # static card data, deck definitions
+├── constants.js                  # shared style tokens & SM-2 grade values
+├── srs.js                        # SM-2 algorithm + persistence + streak
+├── index.css                     # Tailwind entry + reduced-motion overrides
+├── main.jsx                      # ReactDOM bootstrap
+├── components/
+│   ├── DeckSwitcher.jsx
+│   ├── Flashcard.jsx
+│   ├── Header.jsx
+│   └── StatsPanel.jsx
+└── hooks/
+    └── useKeyboardShortcuts.js
+```
+
+## Develop locally
+
+```bash
+npm install
+npm run dev      # http://localhost:5173
+npm run lint
+npm run build
+```
 
 ## Deploy to Vercel (drag-and-drop)
 
-1. **Install dependencies & build locally first** (one-time, on any machine with Node ≥ 18):
+1. **Build locally first** (one-time, on any machine with Node ≥ 18):
    ```bash
    npm install
    npm run build
@@ -30,28 +60,19 @@ Uses **time-compressed SM-2 spaced repetition** (built for cramming, not long-te
    - Go to https://vercel.com/new
    - Drag the entire `vite_app` folder onto the page
    - Vercel auto-detects Vite and deploys
-   - You get a URL like `https://urinary-sediment-flashcards.vercel.app`
 
-   **OR** drag just the `dist/` folder for a static-only deploy (skip step 1's build setup on Vercel side).
+   **OR** drag just the `dist/` folder for a static-only deploy.
 
 3. **Open the URL on your phone.** Add to home screen for an app-like experience.
 
-## Run locally (optional)
-
-```bash
-npm install
-npm run dev
-```
-Opens at http://localhost:5173
-
 ## Switching from cram-mode to long-term SRS
 
-In `src/srs.js`, change:
+In `src/srs.js`, change the unit constant:
+
 ```js
-const UNIT_MS = 60 * 1000; // 1 minute = 1 "day"
+export const UNIT_MS = 60 * 1000;          // cram mode: 1 minute = 1 "day"
+// to
+export const UNIT_MS = 24 * 60 * 60 * 1000; // 1 real day (Anki-style)
 ```
-to:
-```js
-const UNIT_MS = 24 * 60 * 60 * 1000; // 1 real day
-```
-This restores standard Anki-style intervals (1d, 3d, ~6d, ~15d...).
+
+This restores standard intervals (1d, 3d, ~6d, ~15d…).
